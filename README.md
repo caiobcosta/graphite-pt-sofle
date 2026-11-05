@@ -1,10 +1,10 @@
-# Graphite-PT for the Tergo Sofle
+# Graphite-PT para o Tergo Sofle
 
-A keymap for the [Tergo Sofle](https://tecladoergonomico.com.br/loja/tergo-sofle/) (a Sofle v2, wired, Vial firmware, ABNT2 edition) built around the [Graphite](https://github.com/rdavison/graphite-layout) letter layout, adapted for Brazilian Portuguese. The operating system stays on the regular **Portuguese (Brazil) ABNT2** input source; the whole remap lives in the keyboard.
+Keymap para o [Tergo Sofle](https://tecladoergonomico.com.br/loja/tergo-sofle/) (um Sofle v2 com fio, firmware Vial, versão ABNT2) construído sobre o layout de letras [Graphite](https://github.com/rdavison/graphite-layout) e adaptado ao português do Brasil. O sistema operacional continua na fonte de entrada **Português (Brasil) ABNT2**; todo o remapeamento vive no teclado.
 
-![Base layer with the symbols and numpad layers](cheatsheet/cheatsheet.png)
+![Tergo Sofle com keycaps KLP Lamé](images/tergo-sofle.jpg)
 
-## The layout
+## O layout
 
 ```
 ESC   1   2   3   4   5                 6   7   8   9   0   -_
@@ -14,73 +14,76 @@ SHFT  N   R   T   S   G                 Y   H   A   E   I   SHFT
           ^/L5  ~   ´   L2  SPC   ENT  BKSP CMD OPT CTRL
 ```
 
-Letters are Graphite with two changes measured on a Brazilian Portuguese corpus:
+![Camada base com as camadas de símbolos e numérico](cheatsheet/cheatsheet.png)
 
-- **O and U swapped.** It removes the two dominant same-finger bigrams of Portuguese on Graphite, `ao` and `eu`. Same-finger bigrams drop from 2.37% to 1.40% (English stays at 1.08%).
-- **V and W swapped.** V is 1.2% of Portuguese letters and sat on the inner bottom key, the hardest reach on a column-staggered board; W (0.06%) takes that key instead.
+As letras são o Graphite com duas trocas, medidas num corpus de português do Brasil:
 
-Everything else follows from the ABNT2 input source: `Ç` is a real key, `´` and `~` are the ABNT2 dead keys and sit on the **left thumb** (2.6 accents per 100 letters, and all vowels are on the right hand, so accent + vowel alternates hands). `Shift+~` gives `^`, `Shift+´` gives `` ` ``.
+- **O e U trocados.** Elimina os dois bigramas de mesmo dedo dominantes do português no Graphite, `ao` e `eu`. Os bigramas de mesmo dedo caem de 2,37% para 1,40% (o inglês fica em 1,08%).
+- **V e W trocados.** O V é 1,2% das letras do português e estava na tecla interna de baixo, o alcance mais difícil de um teclado de colunas retas; o W (0,06%) ocupa essa tecla no lugar dele.
 
-### Layers
+O resto decorre da fonte de entrada ABNT2: `Ç` é uma tecla de verdade, `´` e `~` são as teclas mortas do ABNT2 e ficam no **polegar esquerdo** (2,6 acentos por 100 letras, e todas as vogais estão na mão direita, então acento + vogal alterna as mãos). `Shift+~` dá `^`, `Shift+´` dá `` ` ``.
 
-| Layer | Access | Contents |
+### Camadas
+
+| Camada | Acesso | Conteúdo |
 |---|---|---|
-| 0 Base | | letters above |
-| 3 Symbols and navigation ("L2") | hold left thumb 4 | F1 to F12, `` ` ^ + { } ``, `~ = - ( )`, `\ \| _ [ ]` on the left; arrows, Home, End, PgUp, PgDn, Caps Word, Opt+arrows, Esc on the right; `{ } ( ) [ ]` mirrored on the right outer columns; `Del` on the Backspace thumb; `•`, `ª`, `º`, `°` on the other right thumbs |
-| 6 Numpad ("L5") | hold left thumb 1 | numpad on the right hand, `,` on the Backspace thumb |
-| 4 Adjust ("L3") | hold the right encoder | RGB, default layer selection, NKRO |
-| 5 Media ("L4") | press the left encoder | volume, play, prev, next |
+| 0 Base | | letras acima |
+| 3 Símbolos e navegação ("L2") | segurar o polegar esquerdo 4 | F1 a F12, `` ` ^ + { } ``, `~ = - ( )`, `\ \| _ [ ]` à esquerda; setas, Home, End, PgUp, PgDn, Caps Word, Opt+setas, Esc à direita; `{ } ( ) [ ]` espelhados nas colunas externas da direita; `Del` no polegar do Backspace; `•`, `ª`, `º`, `°` nos outros polegares direitos |
+| 6 Numérico ("L5") | segurar o polegar esquerdo 1 | teclado numérico na mão direita, `,` no polegar do Backspace |
+| 4 Ajustes ("L3") | segurar o encoder direito | RGB, escolha da camada padrão, NKRO |
+| 5 Mídia ("L4") | apertar o encoder esquerdo | volume, play, anterior, próxima |
 
-Left thumb 1 is a tap dance: tap gives `^` (dead), hold gives the numpad layer. The right encoder is a tap dance too: tap sends `Cmd+0` (zoom 100%), hold activates the Adjust layer. Encoders: left turns horizontal scroll, right turns zoom (`Cmd+-` / `Cmd+=`).
+O polegar esquerdo 1 é um tap dance: toque dá `^` (morto), segurar ativa a camada numérica. O encoder direito também: toque manda `Cmd+0` (zoom 100%), segurar ativa a camada de ajustes. Encoders: o esquerdo gira scroll horizontal, o direito gira zoom (`Cmd+-` / `Cmd+=`).
 
-The layer numbers follow the stock Tergo firmware (0 Basic, 1 Adept, 2 Custom, 3 Symbols, 4 Adjust, 5 Media, 6 Numpad, 7 Mouse). Layer 1 is left empty on purpose: home-row mods only make sense after the letters are automatic. Layer 7 has no access key.
+Os números das camadas seguem o firmware de fábrica da Tergo (0 Basic, 1 Adept, 2 Custom, 3 Símbolos, 4 Ajustes, 5 Mídia, 6 Numérico, 7 Mouse). A camada 1 ficou vazia de propósito: home-row mods só fazem sentido depois que as letras estão automáticas. A camada 7 não tem tecla de acesso.
 
-### Why not Colemak or BR Nativo
+### Por que não Colemak nem BR Nativo
 
-Nine layouts were scored on a 1.1 million letter Portuguese corpus (Wikipedia) and a 570 thousand letter English one, simulating a column-staggered split board. Home row use, pinky load, hand alternation, same-finger bigrams (SFB) and index lateral stretches (LSB), Portuguese:
+Nove layouts foram pontuados num corpus de português com 1,1 milhão de letras (Wikipédia) e num de inglês com 570 mil, simulando um teclado dividido de colunas retas. Uso da home row, carga nos mindinhos, alternância de mãos, bigramas no mesmo dedo (SFB) e esticadas laterais do indicador (LSB), em português:
 
-| Layout | home | pinky | alternation | SFB | LSB |
+| Layout | home | mindinhos | alternância | SFB | LSB |
 |---|---|---|---|---|---|
-| QWERTY ABNT2 | 34% | 18% | 52% | 8.9% | 4.5% |
-| Colemak ABNT2 | 75% | 26% | 59% | 2.1% | 0.4% |
-| Colemak-DH | 74% | 26% | 59% | 2.1% | 3.2% |
-| BR Nativo | 78% | 16% | 77% | 3.1% | 0.9% |
-| Gallium v2 | 63% | 15% | 75% | 2.4% | 2.5% |
-| Graphite | 60% | 15% | 76% | 2.4% | 0.05% |
-| **Graphite-PT** | 61% | 16% | 75% | **1.4%** | 0.04% |
+| QWERTY ABNT2 | 34% | 18% | 52% | 8,9% | 4,5% |
+| Colemak ABNT2 | 75% | 26% | 59% | 2,1% | 0,4% |
+| Colemak-DH | 74% | 26% | 59% | 2,1% | 3,2% |
+| BR Nativo | 78% | 16% | 77% | 3,1% | 0,9% |
+| Gallium v2 | 63% | 15% | 75% | 2,4% | 2,5% |
+| Graphite | 60% | 15% | 76% | 2,4% | 0,05% |
+| **Graphite-PT** | 61% | 16% | 75% | **1,4%** | 0,04% |
 
-Colemak puts A and O on the pinkies (26% pinky load in Portuguese). BR Nativo is good in Portuguese but poor in English (4% SFB). Both are also OS-level drivers, which a programmable keyboard does not need.
+O Colemak põe A e O nos mindinhos (26% de carga em português). O BR Nativo é bom em português mas fraco em inglês (4% de SFB). Os dois também são drivers de sistema operacional, de que um teclado programável não precisa.
 
-Punctuation placement was measured too. Comma under A costs an `a,` same-finger bigram (0.3%); it was kept there anyway for the familiar `, . ; /` order.
+A pontuação também foi medida. A vírgula sob o A custa um bigrama de mesmo dedo `a,` (0,3%); ficou lá mesmo assim pela ordem familiar `, . ; /`.
 
-## Installing
+## Instalação
 
-Requirements: Tergo Sofle wired with the stock Vial firmware (ABNT2 build), [Vial](https://get.vial.today/), and the **Portuguese (Brazil) ABNT2** input source on the computer (tested on macOS; the `•ªº°` thumb keys use macOS Option combinations and will differ on Windows and Linux).
+Requisitos: Tergo Sofle com fio com o firmware Vial de fábrica (versão ABNT2), o [Vial](https://get.vial.today/) e a fonte de entrada **Português (Brasil) ABNT2** no computador (testado no macOS; as teclas de polegar `•ªº°` usam combinações com Option do macOS e saem diferentes no Windows e no Linux).
 
-1. In Vial, save your current layout first (File, Save current layout). Loading a `.vil` replaces every layer, encoder, tap dance and macro.
-2. File, Load saved layout, pick `keymap/tergo-sofle-graphite-pt.vil`.
-3. Print `cheatsheet/cheatsheet.pdf` (A4 landscape). `cheatsheet-combined.pdf` is a single-layer version with the L2 and L5 legends in the corners of each key, meant for black and white printers.
+1. No Vial, salve o layout atual antes (File, Save current layout). Carregar um `.vil` substitui todas as camadas, encoders, tap dances e macros.
+2. File, Load saved layout, escolha `keymap/tergo-sofle-graphite-pt.vil`.
+3. Imprima `cheatsheet/cheatsheet.pdf` (A4 paisagem). `cheatsheet-combined.pdf` é uma versão de camada única com as legendas de L2 e L5 nos cantos de cada tecla, feita para impressora preto e branco.
 
-The file carries the UID of the Tergo Sofle rev0. For any other Sofle with Vial, load it anyway when Vial asks: the matrix is the same 10 x 6, only the encoder and tap dance details may need adjusting.
+O arquivo carrega o UID do Tergo Sofle rev0. Em qualquer outro Sofle com Vial, carregue mesmo assim quando o Vial perguntar: a matriz é a mesma, 10 x 6, e só os detalhes de encoder e tap dance podem precisar de ajuste.
 
-## Regenerating
+## Regenerar
 
-Everything is generated from `scripts/`, Python 3 with no third-party packages. Reference files (the Tergo `info.json`, the Sofle geometry from QMK, the Vial keycode table) are downloaded once into `cache/`.
+Tudo é gerado a partir de `scripts/`, em Python 3 sem pacotes de terceiros. Os arquivos de referência (o `info.json` da Tergo, a geometria do Sofle no QMK, a tabela de keycodes do Vial) são baixados uma vez para `cache/`.
 
 ```sh
-python3 scripts/gen_vil.py        # writes keymap/tergo-sofle-graphite-pt.vil
-python3 scripts/normalize.py      # normalizes keycode names, validates them against Vial, prints the layers
-sh scripts/build_cheatsheets.sh   # HTML, PDF and PNG cheat sheets (needs Chrome and poppler)
+python3 scripts/gen_vil.py        # escreve keymap/tergo-sofle-graphite-pt.vil
+python3 scripts/normalize.py      # normaliza os nomes de keycode, valida contra o Vial, imprime as camadas
+sh scripts/build_cheatsheets.sh   # colas em HTML, PDF e PNG (precisa de Chrome e poppler)
 ```
 
-Layout scoring: `python3 scripts/analyze.py corpus/pt.txt corpus/en.txt` (plain text files; the ones used here were Wikipedia article extracts). `sfb.py` lists the worst bigrams, `punct.py` compares punctuation placements, `tune.py` is a greedy single-swap optimizer. `dump_layout.swift` prints what each key and modifier combination produces on a macOS keyboard layout, which is how the Option combinations were found.
+Pontuação de layouts: `python3 scripts/analyze.py corpus/pt.txt corpus/en.txt` (arquivos de texto puro; os usados aqui foram extratos de artigos da Wikipédia). `sfb.py` lista os piores bigramas, `punct.py` compara posições de pontuação, `tune.py` é um otimizador guloso de trocas simples. `dump_layout.swift` imprime o que cada tecla e combinação de modificadores produz num layout de teclado do macOS, que foi como as combinações com Option foram encontradas.
 
-## Credits
+## Créditos
 
-- [Graphite](https://github.com/rdavison/graphite-layout) by rdavison.
-- [Tergo Teclados](https://github.com/TergoTeclados) for the Sofle and its [Vial firmware](https://github.com/TergoTeclados/vial-qmk-firmware).
+- [Graphite](https://github.com/rdavison/graphite-layout), de rdavison.
+- [Tergo Teclados](https://github.com/TergoTeclados), pelo Sofle e pelo [firmware Vial](https://github.com/TergoTeclados/vial-qmk-firmware).
 - [Vial](https://get.vial.today/).
+- Keycaps [KLP Lamé](https://github.com/braindefender/KLP-Lame-Keycaps), de braindefender.
 
-## Resumo em português
+## Summary in English
 
-Keymap para o Tergo Sofle (com fio, Vial, versão ABNT2) com as letras do Graphite adaptadas ao português: O e U trocados (elimina os bigramas "ao" e "eu" no mesmo dedo), V e W trocados (tira o V da tecla interna de baixo), Ç na coluna externa esquerda, acentos agudo e til nos polegares esquerdos. O sistema continua em Português Brasil ABNT2; todo o remapeamento está no firmware. Para instalar: salve o layout atual no Vial, carregue `keymap/tergo-sofle-graphite-pt.vil` e imprima `cheatsheet/cheatsheet.pdf`. Detalhes, medições e geradores acima.
+A keymap for the Tergo Sofle (wired, Vial, ABNT2 edition) built on the Graphite letter layout and adapted for Brazilian Portuguese: O and U swapped (removes the `ao` and `eu` same-finger bigrams), V and W swapped (moves V off the inner bottom key), `Ç` on the left outer column, acute and tilde dead keys on the left thumbs. The OS stays on the Portuguese (Brazil) ABNT2 input source; the whole remap lives in the firmware. To install: save your current layout in Vial, load `keymap/tergo-sofle-graphite-pt.vil` and print `cheatsheet/cheatsheet.pdf`. Details, measurements and generators above, in Portuguese.
