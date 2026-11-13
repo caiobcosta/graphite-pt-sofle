@@ -67,7 +67,7 @@ O arquivo carrega o UID do Tergo Sofle rev0. Em qualquer outro Sofle com Vial, c
 
 ## Regenerar
 
-Tudo é gerado a partir de `scripts/`, em Python 3 sem pacotes de terceiros. Os arquivos de referência (o `info.json` da Tergo e a tabela de keycodes do Vial) são baixados uma vez para `cache/`. A geometria das teclas nas colas é a do Tergo Sofle: polegares e encoder seguem o desenho oficial da Tergo, e o desnível das colunas foi medido em fotos do teclado (as duas colunas externas ficam alinhadas, 0,375u abaixo da coluna do dedo médio). Ela difere do desenho padrão do Sofle no QMK. As metades são desenhadas giradas 21° cada, como ficam na mesa do autor; o ângulo é a constante `HALF_ANGLE` em `scripts/gen_cheatsheet.py`.
+Tudo é gerado a partir de `scripts/`, em Python 3 sem pacotes de terceiros. Os arquivos de referência (o `info.json` da Tergo e a tabela de keycodes do Vial) são baixados uma vez para `cache/`. A geometria das teclas nas colas é a do Tergo Sofle: polegares e encoder seguem o desenho oficial da Tergo, e o desnível das colunas foi medido em fotos do teclado (as duas colunas externas ficam alinhadas, 0,375u abaixo da coluna do dedo médio). Ela difere do desenho padrão do Sofle no QMK. As metades são desenhadas giradas 12° cada. Na mesa do autor o ângulo real é de uns 21°, mas no papel, com as metades desenhadas bem mais próximas do que ficam na mesa, esse valor parece exagerado; para outro ângulo, `python3 scripts/gen_cheatsheet.py --angle=N`.
 
 ```sh
 python3 scripts/gen_vil.py        # escreve keymap/tergo-sofle-graphite-pt.vil

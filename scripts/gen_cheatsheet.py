@@ -40,9 +40,11 @@ GEO, ROT = _geometry()
 assert len(GEO) == 60
 ENC = {42, 43}
 
-# The halves are drawn splayed the way they sit on the desk: each one rotated HALF_ANGLE degrees
-# (left clockwise, right counter-clockwise), measured on a top-down photo (about 42 degrees between them).
-HALF_ANGLE = 21.0
+# The halves are drawn splayed: each one rotated HALF_ANGLE degrees (left clockwise, right
+# counter-clockwise). On the author's desk each half sits at about 21 degrees, but the drawing puts
+# the halves much closer together than they are on the desk, so the true angle reads as too steep
+# on paper; 12 keeps the cue and the legends readable. Override with --angle=N (0 draws them straight).
+HALF_ANGLE = next((float(a.split("=", 1)[1]) for a in sys.argv if a.startswith("--angle=")), 12.0)
 HALF_GAP = 0.7                 # clearance between the two halves at their closest point, in u
 PIVOT = (3.9, 3.1)             # rotation centre of the left half; the right half mirrors it about x = 8
 def _splay():
