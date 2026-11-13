@@ -13,12 +13,31 @@ def fetch(url, name):
         urllib.request.urlretrieve(url, p)
     return p
 TERGO_INFO = ("https://raw.githubusercontent.com/TergoTeclados/vial-qmk-firmware/vial/keyboards/tergo_sofle/rev0/info.json", "tergo_sofle_rev0_info.json")
-SOFLE_GEO = ("https://raw.githubusercontent.com/qmk/qmk_firmware/master/keyboards/sofle/rev1/keyboard.json", "sofle_rev1_keyboard.json")
 VIAL_KC = ("https://raw.githubusercontent.com/vial-kb/vial-gui/main/src/main/python/keycodes/keycodes.py", "vial_keycodes.py")
 VIAL_ANY = ("https://raw.githubusercontent.com/vial-kb/vial-gui/main/src/main/python/any_keycode.py", "vial_any_keycode.py")
-GEO = json.load(open(fetch(*SOFLE_GEO)))["layouts"]["LAYOUT"]["layout"]
+# Key geometry of the Tergo Sofle, in key units (1u = 19.05 mm), LAYOUT order.
+# Taken from Tergo's own layout drawing (Tergo-Sofle-Documentation, static/img/base_abnt.svg)
+# and checked against a photo of the board. It differs from the stock QMK Sofle drawing:
+# the two outer columns sit at the same height, the three plain thumb keys continue their
+# columns, the encoder is level with the bottom row, and the inner thumbs are rotated 22.5 and 30 degrees.
+STAGGER = [0.625, 0.625, 0.125, 0.0, 0.125, 0.25]      # left half, outer -> inner column
+def _geometry():
+    geo, rot = [], {}
+    def add(cx, cy, h=1, r=0):
+        if r: rot[len(geo)] = r
+        geo.append({"x": cx - 0.5, "y": cy - h / 2, "h": h})
+    def row(r):
+        for c in range(6): add(c + 0.5, STAGGER[c] + 0.5 + r)            # left, outer -> inner
+        if r == 3: add(6.625, STAGGER[5] + 3.5); add(9.375, STAGGER[5] + 3.5)   # encoders
+        for c in range(5, -1, -1): add(15.5 - c, STAGGER[c] + 0.5 + r)   # right, inner -> outer
+    for r in range(4): row(r)
+    thumbs = [(2.5, 4.625, 1, 0), (3.5, 4.5, 1, 0), (4.5, 4.625, 1, 0), (5.643, 4.893, 1, 22.5), (6.75, 5.196, 1.5, 30)]
+    for cx, cy, h, r in thumbs: add(cx, cy, h, r)
+    for cx, cy, h, r in reversed(thumbs): add(16 - cx, cy, h, -r)
+    return geo, rot
+GEO, ROT = _geometry()
+assert len(GEO) == 60
 ENC = {42, 43}
-ROT = {53: 10, 54: 25, 55: -25, 56: -10}   # degrees, mimicking the Tergo sheet
 KEY = 0.92
 
 T = "▽"      # transparent
@@ -72,7 +91,7 @@ L5 = [
 assert len(L1)==len(L2)==len(L5)==60
 
 def kb(labels, held=None, idp="a", ov2=None, ov5=None, clip=None):
-    vb = {"L": "-0.1 -0.1 7.5 6.2", "R": "9.3 -0.1 7.4 6.2"}.get(clip, "-0.1 -0.1 16.7 6.2")
+    vb = {"L": "-0.1 -0.1 7.75 6.3", "R": "8.35 -0.1 7.75 6.3"}.get(clip, "-0.1 -0.1 16.2 6.3")
     out = [f'<svg viewBox="{vb}" xmlns="http://www.w3.org/2000/svg" class="kb">',
            f'<defs><pattern id="h{idp}" width="0.18" height="0.18" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="0.09" height="0.18" fill="#555"/></pattern></defs>']
     for i, g in enumerate(GEO):
@@ -136,7 +155,7 @@ h2 b{font-weight:bold;font-size:5mm;margin-right:3mm}
 .t.o2{fill:#111} .t.o5{fill:#777}
 .t.q{font-size:0.3px} .t.q-sm{font-size:0.17px} .t.q-x{font-size:0.13px;fill:#444}
 .combo .top{height:150mm} .combo .bottom{display:none}
-.halves{display:flex;gap:4mm;height:113mm;justify-content:center;margin-top:1mm}
+.halves{display:flex;gap:3mm;height:112mm;justify-content:center;margin-top:1mm}
 h2.below{margin:4mm 0 0 0}
 .halves .kb{height:100%;width:auto;flex:0 0 auto;max-height:none;margin:0}
 .notes{font-size:2.7mm;color:#333;margin:3mm 0 0 0;padding-top:1mm;display:flex;gap:6mm;flex-wrap:wrap}

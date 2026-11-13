@@ -67,7 +67,7 @@ O arquivo carrega o UID do Tergo Sofle rev0. Em qualquer outro Sofle com Vial, c
 
 ## Regenerar
 
-Tudo é gerado a partir de `scripts/`, em Python 3 sem pacotes de terceiros. Os arquivos de referência (o `info.json` da Tergo, a geometria do Sofle no QMK, a tabela de keycodes do Vial) são baixados uma vez para `cache/`.
+Tudo é gerado a partir de `scripts/`, em Python 3 sem pacotes de terceiros. Os arquivos de referência (o `info.json` da Tergo e a tabela de keycodes do Vial) são baixados uma vez para `cache/`. A geometria das teclas nas colas é a do Tergo Sofle, tirada do desenho oficial da Tergo e conferida numa foto do teclado; ela difere do desenho padrão do Sofle no QMK (colunas externas na mesma altura, polegares continuando as colunas, encoder na altura da fileira de baixo).
 
 ```sh
 python3 scripts/gen_vil.py        # escreve keymap/tergo-sofle-graphite-pt.vil
