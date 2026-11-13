@@ -1,4 +1,4 @@
-import json, html, sys
+import json, html, sys, math
 COMBO = "--combo" in sys.argv
 HOME = {25,26,27,28,31,32,33,34}   # N R T S | H A E I
 DOTS = {28,31}                     # S, H
@@ -16,11 +16,12 @@ TERGO_INFO = ("https://raw.githubusercontent.com/TergoTeclados/vial-qmk-firmware
 VIAL_KC = ("https://raw.githubusercontent.com/vial-kb/vial-gui/main/src/main/python/keycodes/keycodes.py", "vial_keycodes.py")
 VIAL_ANY = ("https://raw.githubusercontent.com/vial-kb/vial-gui/main/src/main/python/any_keycode.py", "vial_any_keycode.py")
 # Key geometry of the Tergo Sofle, in key units (1u = 19.05 mm), LAYOUT order.
-# Taken from Tergo's own layout drawing (Tergo-Sofle-Documentation, static/img/base_abnt.svg)
-# and checked against a photo of the board. It differs from the stock QMK Sofle drawing:
-# the two outer columns sit at the same height, the three plain thumb keys continue their
-# columns, the encoder is level with the bottom row, and the inner thumbs are rotated 22.5 and 30 degrees.
-STAGGER = [0.625, 0.625, 0.125, 0.0, 0.125, 0.25]      # left half, outer -> inner column
+# Thumbs, encoder and inner columns follow Tergo's own layout drawing (Tergo-Sofle-Documentation,
+# static/img/base_abnt.svg). The column stagger was measured on photos of the board: the two
+# outer columns sit level, 0.375u below the middle-finger column. Tergo's drawing puts them at
+# 0.625u and the stock QMK Sofle drawing at 0.375u/0.5u; fitting each candidate to two close-up
+# photos left an RMS error of 0.05u, 0.04u and 0.015u (measured values) respectively.
+STAGGER = [0.375, 0.375, 0.125, 0.0, 0.125, 0.25]      # left half, outer -> inner column
 def _geometry():
     geo, rot = [], {}
     def add(cx, cy, h=1, r=0):
@@ -38,6 +39,27 @@ def _geometry():
 GEO, ROT = _geometry()
 assert len(GEO) == 60
 ENC = {42, 43}
+
+# The halves are drawn splayed the way they sit on the desk: each one rotated HALF_ANGLE degrees
+# (left clockwise, right counter-clockwise), measured on a top-down photo (about 42 degrees between them).
+HALF_ANGLE = 21.0
+HALF_GAP = 0.7                 # clearance between the two halves at their closest point, in u
+PIVOT = (3.9, 3.1)             # rotation centre of the left half; the right half mirrors it about x = 8
+def _splay():
+    a = math.radians(HALF_ANGLE); ca, sa = math.cos(a), math.sin(a)
+    pts = []
+    for i, g in enumerate(GEO):
+        h = g.get("h", 1); cx, cy = g["x"] + 0.5, g["y"] + h / 2
+        if cx > 8: continue
+        r = math.radians(ROT.get(i, 0)); cr, sr = math.cos(r), math.sin(r)
+        for dx, dy in ((-.5, -h/2), (.5, -h/2), (.5, h/2), (-.5, h/2)):
+            x, y = cx + dx*cr - dy*sr - PIVOT[0], cy + dx*sr + dy*cr - PIVOT[1]
+            pts.append((PIVOT[0] + x*ca - y*sa, PIVOT[1] + x*sa + y*ca))
+    xs = [p[0] for p in pts]; ys = [p[1] for p in pts]
+    tx = (16 - 2*max(xs) - HALF_GAP) / 2          # shift that leaves HALF_GAP between the halves
+    x0 = min(xs) + tx - 0.1; y0 = min(ys) - 0.1
+    return tx, f"{x0:.3f} {y0:.3f} {16 - 2*x0:.3f} {max(ys) - min(ys) + 0.2:.3f}"
+SPLAY_TX, VIEWBOX = _splay()
 KEY = 0.92
 
 T = "▽"      # transparent
@@ -90,12 +112,14 @@ L5 = [
 ]
 assert len(L1)==len(L2)==len(L5)==60
 
-def kb(labels, held=None, idp="a", ov2=None, ov5=None, clip=None):
-    vb = {"L": "-0.1 -0.1 7.75 6.3", "R": "8.35 -0.1 7.75 6.3"}.get(clip, "-0.1 -0.1 16.2 6.3")
-    out = [f'<svg viewBox="{vb}" xmlns="http://www.w3.org/2000/svg" class="kb">',
-           f'<defs><pattern id="h{idp}" width="0.18" height="0.18" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="0.09" height="0.18" fill="#555"/></pattern></defs>']
+def kb(labels, held=None, idp="a", ov2=None, ov5=None):
+    head = [f'<svg viewBox="{VIEWBOX}" xmlns="http://www.w3.org/2000/svg" class="kb">',
+            f'<defs><pattern id="h{idp}" width="0.18" height="0.18" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="0.09" height="0.18" fill="#555"/></pattern></defs>']
+    halves = {"L": [f'<g transform="translate({SPLAY_TX:.3f} 0) rotate({HALF_ANGLE} {PIVOT[0]} {PIVOT[1]})">'],
+              "R": [f'<g transform="translate({-SPLAY_TX:.3f} 0) rotate({-HALF_ANGLE} {16 - PIVOT[0]} {PIVOT[1]})">']}
     for i, g in enumerate(GEO):
         x, y = g["x"], g["y"]; h = g.get("h", 1)
+        out = halves["L" if x + 0.5 < 8 else "R"]
         lab = labels[i]
         cx, cy = x + 0.5, y + h/2
         rot = ROT.get(i, 0)
@@ -135,8 +159,7 @@ def kb(labels, held=None, idp="a", ov2=None, ov5=None, clip=None):
                 tl = f' textLength="{min(len(o)*fs*0.62, 0.46):.2f}" lengthAdjust="spacingAndGlyphs"' if len(o) >= 3 else ''
                 out.append(f'<text x="{x+0.82}" y="{yy}" class="{cls}" style="font-size:{fs}px" text-anchor="end"{tl}>{html.escape(o)}</text>')
         out.append('</g>')
-    out.append('</svg>')
-    return "\n".join(out)
+    return "\n".join(head + halves["L"] + ['</g>'] + halves["R"] + ['</g>', '</svg>'])
 
 CSS = """
 @page { size: A4 landscape; margin: 7mm 8mm; }
@@ -144,27 +167,25 @@ html,body{margin:0;padding:0;background:#fff}
 body{font-family:Menlo,"DejaVu Sans Mono",monospace;color:#111;width:281mm;height:196mm;display:flex;flex-direction:column}
 h2{font-size:3.6mm;font-weight:normal;margin:0 0 1mm 0;letter-spacing:0.1mm}
 h2 b{font-weight:bold;font-size:5mm;margin-right:3mm}
-.top{height:104mm;display:flex;flex-direction:column}
-.bottom{height:80mm;display:flex;gap:5mm;margin-top:1mm;border-top:0.3mm dashed #bbb;padding-top:1.5mm}
+.top{height:110mm;display:flex;flex-direction:column}
+.bottom{height:69mm;display:flex;gap:5mm;margin-top:1mm;border-top:0.3mm dashed #bbb;padding-top:1.5mm}
 .half{flex:1;display:flex;flex-direction:column;min-width:0;justify-content:flex-start}
 .kb{flex:1;width:100%;height:auto;max-height:100%}
-.top .kb{max-height:96mm;margin:0 auto}
-.bottom .kb{flex:0 0 auto;max-height:70mm}
+.top .kb{max-height:102mm;margin:0 auto}
+.bottom .kb{flex:0 0 auto;max-height:60mm}
 .t{text-anchor:middle;dominant-baseline:central;font-family:Menlo,"DejaVu Sans Mono",monospace;font-size:0.34px;fill:#111}
 .t.sm{font-size:0.2px} .t.xs{font-size:0.15px} .t.tr{fill:#777;font-size:0.3px}
 .t.o2{fill:#111} .t.o5{fill:#777}
 .t.q{font-size:0.3px} .t.q-sm{font-size:0.17px} .t.q-x{font-size:0.13px;fill:#444}
-.combo .top{height:150mm} .combo .bottom{display:none}
-.halves{display:flex;gap:3mm;height:112mm;justify-content:center;margin-top:1mm}
+.combo .top{height:160mm} .combo .top .kb{max-height:136mm} .combo .bottom{display:none}
 h2.below{margin:4mm 0 0 0}
-.halves .kb{height:100%;width:auto;flex:0 0 auto;max-height:none;margin:0}
 .notes{font-size:2.7mm;color:#333;margin:3mm 0 0 0;padding-top:1mm;display:flex;gap:6mm;flex-wrap:wrap}
 .notes span b{font-weight:bold}
 """
 HTML = f"""<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Cola Tergo Sofle · Graphite-PT</title><style>{CSS}</style></head><body class="{'combo' if COMBO else ''}">
 <div class="top">
 {'' if COMBO else '''<h2><b>L1</b>Base — Graphite-PT (letras do Graphite com O↔U trocados · sistema em ABNT2):</h2>'''}
-{('<div class="halves">' + kb(L1, None, "a", L2, L5, "L") + kb(L1, None, "b", L2, L5, "R") + '</div>') if COMBO else kb(L1, None, "a")}
+{kb(L1, None, "a", L2, L5) if COMBO else kb(L1, None, "a")}
 {'''<h2 class="below"><b>L1</b>Base — Graphite-PT (letras do Graphite com O↔U trocados · sistema em ABNT2) · canto superior direito = com L2 segurado · canto inferior direito, cinza = com L5 segurado</h2>''' if COMBO else ''}
 </div>
 <div class="bottom">
