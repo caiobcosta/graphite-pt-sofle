@@ -120,7 +120,7 @@ if _arg("overrides"):
     for k in json.load(open(_arg("overrides"))).get("keys", []):
         target = {0: L1, 3: L2, 6: L5}.get(k["layer"])
         if target is not None and k.get("label"): target[k["index"]] = K(k["label"], small=1)
-SCALE = float(_arg("scale", "0.8"))      # printed size relative to a full A4 landscape page
+SCALE = float(_arg("scale", "0.9"))      # printed size relative to a full A4 landscape page
 
 def kb(labels, held=None, idp="a", ov2=None, ov5=None):
     head = [f'<svg viewBox="{VIEWBOX}" xmlns="http://www.w3.org/2000/svg" class="kb">',
