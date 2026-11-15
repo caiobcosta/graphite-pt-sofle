@@ -1,5 +1,5 @@
 """Normalize keycode aliases to Vial primary ids, validate every keycode, print the main layers."""
-import json, re
+import json, re, sys
 from pathlib import Path
 import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,6 +25,7 @@ for m in re.finditer(r'K\("([^"]+)"', src):
 for n in range(16):
     for p in ("MO","DF","TG","TT","OSL","TO","TD"): prim[f"{p}({n})"]=f"{p}({n})"
     prim[f"USER{n:02}"]=f"USER{n:02}"
+    prim[f"M{n}"]=f"M{n}"
 funcs=set(re.findall(r'"([A-Z_]+)": [A-Z_]+', open(fetch(*VIAL_ANY)).read()))
 unknown=set()
 def norm(k):
@@ -32,7 +33,7 @@ def norm(k):
     m=re.fullmatch(r'([A-Z_0-9]+)\(([A-Z_0-9]+)\)', k)
     if m and m.group(1) in funcs and m.group(2) in prim: return f"{m.group(1)}({prim[m.group(2)]})"
     unknown.add(k); return k
-p=ROOT/"keymap"/"tergo-sofle-graphite-pt.vil"; v=json.load(open(p))
+p=Path(sys.argv[1]) if len(sys.argv)>1 else ROOT/"keymap"/"tergo-sofle-graphite-pt.vil"; v=json.load(open(p))
 v["layout"]=[[[norm(k) for k in r] for r in L] for L in v["layout"]]
 v["encoder_layout"]=[[[norm(k) for k in e] for e in L] for L in v["encoder_layout"]]
 v["tap_dance"]=[[norm(k) for k in td[:4]]+[td[4]] for td in v["tap_dance"]]

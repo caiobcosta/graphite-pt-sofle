@@ -43,8 +43,8 @@ ENC = {42, 43}
 # The halves are drawn splayed: each one rotated HALF_ANGLE degrees (left clockwise, right
 # counter-clockwise). On the author's desk each half sits at about 21 degrees, but the drawing puts
 # the halves much closer together than they are on the desk, so the true angle reads as too steep
-# on paper; 12 keeps the cue and the legends readable. Override with --angle=N (0 draws them straight).
-HALF_ANGLE = next((float(a.split("=", 1)[1]) for a in sys.argv if a.startswith("--angle=")), 12.0)
+# on paper; 15 keeps the cue and the legends readable. Override with --angle=N (0 draws them straight).
+HALF_ANGLE = next((float(a.split("=", 1)[1]) for a in sys.argv if a.startswith("--angle=")), 15.0)
 HALF_GAP = 0.7                 # clearance between the two halves at their closest point, in u
 PIVOT = (3.9, 3.1)             # rotation centre of the left half; the right half mirrors it about x = 8
 def _splay():
@@ -73,9 +73,9 @@ def K(main, shift=None, small=False):
 # ---------- L1: Graphite-PT (ABNT2) ----------
 L1 = [
  K("ESC",small=1), K("1","!"), K("2","@"), K("3","#"), K("4","$"), K("5","%"),
- K("6","¨"), K("7","&"), K("8","*"), K("9","("), K("0",")"), K("-","_"),
+ K("6","¨"), K("7","&"), K("8","*"), K("9","("), K("0",")"), K("=","+"),
  K("TAB",small=1), K("B"), K("L"), K("D"), K("V"), K("Z"),
- K("'",'"'), K("F"), K("U"), K("O"), K("J"), K("=","+"),
+ K("'",'"'), K("F"), K("U"), K("O"), K("J"), K("-","_"),
  K("SHIFT",small=1), K("N"), K("R"), K("T"), K("S"), K("G"),
  K("Y"), K("H"), K("A"), K("E"), K("I"), K("SHIFT",small=1),
  K("Ç"), K("Q"), K("X"), K("M"), K("C"), K("W"),
@@ -113,6 +113,14 @@ L5 = [
  K(T), K(","), K("0"), K("0"), K("."),
 ]
 assert len(L1)==len(L2)==len(L5)==60
+def _arg(name, default=None):
+    return next((a.split("=", 1)[1] for a in sys.argv if a.startswith(f"--{name}=")), default)
+# Optional local overrides kept out of the repository (same file gen_vil.py takes): relabel keys.
+if _arg("overrides"):
+    for k in json.load(open(_arg("overrides"))).get("keys", []):
+        target = {0: L1, 3: L2, 6: L5}.get(k["layer"])
+        if target is not None and k.get("label"): target[k["index"]] = K(k["label"], small=1)
+SCALE = float(_arg("scale", "0.8"))      # printed size relative to a full A4 landscape page
 
 def kb(labels, held=None, idp="a", ov2=None, ov5=None):
     head = [f'<svg viewBox="{VIEWBOX}" xmlns="http://www.w3.org/2000/svg" class="kb">',
@@ -166,7 +174,7 @@ def kb(labels, held=None, idp="a", ov2=None, ov5=None):
 CSS = """
 @page { size: A4 landscape; margin: 7mm 8mm; }
 html,body{margin:0;padding:0;background:#fff}
-body{font-family:Menlo,"DejaVu Sans Mono",monospace;color:#111;width:281mm;height:196mm;display:flex;flex-direction:column}
+body{font-family:Menlo,"DejaVu Sans Mono",monospace;color:#111;width:281mm;height:196mm;display:flex;flex-direction:column;zoom:__SCALE__;margin:0 auto}
 h2{font-size:3.6mm;font-weight:normal;margin:0 0 1mm 0;letter-spacing:0.1mm}
 h2 b{font-weight:bold;font-size:5mm;margin-right:3mm}
 .top{height:110mm;display:flex;flex-direction:column}
@@ -184,6 +192,7 @@ h2.below{margin:4mm 0 0 0}
 .notes{font-size:2.7mm;color:#333;margin:3mm 0 0 0;padding-top:1mm;display:flex;gap:6mm;flex-wrap:wrap}
 .notes span b{font-weight:bold}
 """
+CSS = CSS.replace("__SCALE__", str(SCALE))
 HTML = f"""<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Cola Tergo Sofle · Graphite-PT</title><style>{CSS}</style></head><body class="{'combo' if COMBO else ''}">
 <div class="top">
 {'' if COMBO else '''<h2><b>L1</b>Base — Graphite-PT (letras do Graphite com O↔U trocados · sistema em ABNT2):</h2>'''}
@@ -196,6 +205,6 @@ HTML = f"""<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>
 </div>
 <p class="notes"><span><b>Shift+~</b> = ^</span><span><b>Shift+´</b> = `</span><span><b>Shift+'</b> = "</span><span><b>L2 + BKSP</b> = DEL</span><span><b>^</b>: toque = ^ · segurar = L5</span><span>Encoder L4: girar = scroll horizontal</span><span>Encoder L3: girar = zoom − / + · clique rápido = zoom 100% · segurar = camada 3</span></p>
 </body></html>"""
-OUT = ROOT / "cheatsheet" / ("cheatsheet-combined.html" if COMBO else "cheatsheet.html")
+OUT = Path(_arg("outdir", ROOT / "cheatsheet")) / ("cheatsheet-combined.html" if COMBO else "cheatsheet.html")
 open(OUT,"w").write(HTML)
 print("ok", len(HTML))

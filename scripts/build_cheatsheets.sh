@@ -1,11 +1,13 @@
 #!/bin/sh
-# Renders cheatsheet/*.html to PDF and PNG with headless Chrome and pdftoppm (poppler).
+# Renders the cheat sheets to HTML, PDF and PNG with headless Chrome and pdftoppm (poppler).
+# Extra arguments go to gen_cheatsheet.py (--angle=N, --scale=F, --overrides=FILE); OUTDIR picks the folder.
 set -e
 cd "$(dirname "$0")/.."
-python3 scripts/gen_cheatsheet.py
-python3 scripts/gen_cheatsheet.py --combo
+OUTDIR="${OUTDIR:-cheatsheet}"
+python3 scripts/gen_cheatsheet.py --outdir="$OUTDIR" "$@"
+python3 scripts/gen_cheatsheet.py --combo --outdir="$OUTDIR" "$@"
 CHROME="${CHROME:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}"
 for n in cheatsheet cheatsheet-combined; do
-  "$CHROME" --headless=new --disable-gpu --no-pdf-header-footer --print-to-pdf="cheatsheet/$n.pdf" "cheatsheet/$n.html"
-  pdftoppm -r 150 -png -singlefile "cheatsheet/$n.pdf" "cheatsheet/$n"
+  "$CHROME" --headless=new --disable-gpu --no-pdf-header-footer --print-to-pdf="$OUTDIR/$n.pdf" "$OUTDIR/$n.html" 2>/dev/null
+  pdftoppm -r 150 -png -singlefile "$OUTDIR/$n.pdf" "$OUTDIR/$n"
 done

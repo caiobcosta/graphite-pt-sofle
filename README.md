@@ -7,8 +7,8 @@ Keymap para o [Tergo Sofle](https://tecladoergonomico.com.br/loja/tergo-sofle/) 
 ## O layout
 
 ```
-ESC   1   2   3   4   5                 6   7   8   9   0   -_
-TAB   B   L   D   V   Z                 '   F   U   O   J   =+
+ESC   1   2   3   4   5                 6   7   8   9   0   =+
+TAB   B   L   D   V   Z                 '   F   U   O   J   -_
 SHFT  N   R   T   S   G                 Y   H   A   E   I   SHFT
 Ç     Q   X   M   C   W   [L4]   [L3]   K   P   ,   .   ;   /
           ^/L5  ~   ´   L2  SPC   ENT  BKSP CMD OPT CTRL
@@ -67,7 +67,7 @@ O arquivo carrega o UID do Tergo Sofle rev0. Em qualquer outro Sofle com Vial, c
 
 ## Regenerar
 
-Tudo é gerado a partir de `scripts/`, em Python 3 sem pacotes de terceiros. Os arquivos de referência (o `info.json` da Tergo e a tabela de keycodes do Vial) são baixados uma vez para `cache/`. A geometria das teclas nas colas é a do Tergo Sofle: polegares e encoder seguem o desenho oficial da Tergo, e o desnível das colunas foi medido em fotos do teclado (as duas colunas externas ficam alinhadas, 0,375u abaixo da coluna do dedo médio). Ela difere do desenho padrão do Sofle no QMK. As metades são desenhadas giradas 12° cada. Na mesa do autor o ângulo real é de uns 21°, mas no papel, com as metades desenhadas bem mais próximas do que ficam na mesa, esse valor parece exagerado; para outro ângulo, `python3 scripts/gen_cheatsheet.py --angle=N`.
+Tudo é gerado a partir de `scripts/`, em Python 3 sem pacotes de terceiros. Os arquivos de referência (o `info.json` da Tergo e a tabela de keycodes do Vial) são baixados uma vez para `cache/`. A geometria das teclas nas colas é a do Tergo Sofle: polegares e encoder seguem o desenho oficial da Tergo, e o desnível das colunas foi medido em fotos do teclado (as duas colunas externas ficam alinhadas, 0,375u abaixo da coluna do dedo médio). Ela difere do desenho padrão do Sofle no QMK. As metades são desenhadas giradas 15° cada. Na mesa do autor o ângulo real é de uns 21°, mas no papel, com as metades desenhadas bem mais próximas do que ficam na mesa, esse valor parece exagerado; para outro ângulo, `--angle=N`. A cola sai a 80% do tamanho da página A4; `--scale=1` volta à página inteira. Os dois geradores aceitam `--overrides=ARQUIVO.json` para trocar teclas e incluir macros a partir de um arquivo local, fora do repositório (formato descrito em `scripts/gen_vil.py`).
 
 ```sh
 python3 scripts/gen_vil.py        # escreve keymap/tergo-sofle-graphite-pt.vil

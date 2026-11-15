@@ -38,8 +38,8 @@ def layout(rows):
     return grid
 
 BASE = layout([
- "KC_ESC","KC_1","KC_2","KC_3","KC_4","KC_5",                         "KC_6","KC_7","KC_8","KC_9","KC_0","KC_MINS",
- "KC_TAB","KC_B","KC_L","KC_D","KC_V","KC_Z",                         QUOT_BR,"KC_F","KC_U","KC_O","KC_J","KC_EQL",
+ "KC_ESC","KC_1","KC_2","KC_3","KC_4","KC_5",                         "KC_6","KC_7","KC_8","KC_9","KC_0","KC_EQL",
+ "KC_TAB","KC_B","KC_L","KC_D","KC_V","KC_Z",                         QUOT_BR,"KC_F","KC_U","KC_O","KC_J","KC_MINS",
  "KC_LSFT","KC_N","KC_R","KC_T","KC_S","KC_G",                        "KC_Y","KC_H","KC_A","KC_E","KC_I","KC_RSFT",
  CCED,"KC_Q","KC_X","KC_M","KC_C","KC_W", f"MO({MEDIA})",   "TD(0)",   "KC_K","KC_P","KC_COMM","KC_DOT",SCLN_BR,SLSH_BR,
           "TD(1)",TILD,ACUT,f"MO({SYMB})","KC_SPC",          "KC_ENT","KC_BSPC","KC_RGUI","KC_RALT","KC_RCTL",
@@ -95,9 +95,24 @@ tap_dance = [["LGUI(KC_0)", f"MO({ADJ})", "KC_NO", "KC_NO", 300],
 
 # QMK settings as exported from the author's keyboard (tapping term etc.). Replace with {} to keep yours.
 QMK_SETTINGS = {"1": 0, "2": 50, "3": 0, "4": 175, "5": 5, "6": 5000, "7": 300, "8": 3, "9": 0, "10": 16, "11": 8, "12": 5, "13": 32, "14": 0, "15": 80, "16": 8, "17": 40, "18": 10, "19": 80, "20": 5, "21": 0}
+# Optional local overrides, kept out of the repository: --overrides=FILE.json with
+#   {"macros": {"0": [["text", "..."]]}, "keys": [{"layer": 3, "index": 36, "keycode": "M0", "label": "..."}]}
+# ("index" is the LAYOUT position, 0-59) and --out=FILE.vil for where to write the result.
+import sys
+def _arg(name):
+    return next((a.split("=", 1)[1] for a in sys.argv if a.startswith(f"--{name}=")), None)
+macro = []
+if _arg("overrides"):
+    ov = json.load(open(_arg("overrides")))
+    layers = [[row[:] for row in layer] for layer in layers]
+    for k in ov.get("keys", []):
+        r, c = POS[k["index"]]; layers[k["layer"]][r][c] = k["keycode"]
+    if ov.get("macros"):
+        macro = [[] for _ in range(16)]
+        for i, actions in ov["macros"].items(): macro[int(i)] = actions
 vil = {"version": 1, "uid": UID, "layout": layers, "encoder_layout": encoders,
-       "layout_options": -1, "macro": [], "vial_protocol": 6, "via_protocol": 9,
+       "layout_options": -1, "macro": macro, "vial_protocol": 6, "via_protocol": 9,
        "tap_dance": tap_dance, "combo": [], "key_override": [], "alt_repeat_key": [], "settings": QMK_SETTINGS}
-out = ROOT / "keymap" / "tergo-sofle-graphite-pt.vil"
+out = Path(_arg("out")) if _arg("out") else ROOT / "keymap" / "tergo-sofle-graphite-pt.vil"
 json.dump(vil, open(out, "w"), ensure_ascii=False)
 print("wrote", out, "uid", UID)
